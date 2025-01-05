@@ -36,3 +36,30 @@ const values = [3, 4, 5, 6];   // 物品的价值
 const capacity = 5;            // 背包的容量
 
 console.log(knapsack(weights, values, capacity));  // 输出最大价值
+
+
+// 优化：滚动数组
+// 状态转移方程: dp[i][j] = Math.max(dp[i - 1][j], dp[i - 1][j - weights[i - 1]] + values[i - 1]);
+// 由于最新一行值，只与上一行值有关: dp[i-1]
+// 并且最新一行列数大的最优解，只与上一行列数小的最优解相关：[j - weights[i - 1]]
+// 所以我们是不是可以将二维变为一维（可以想象为上一层的值直接复制到下一层），循环从后先前
+// 滚动存储物品索引为i的最优解
+function knapsack(weights, values, capacity) {
+    const n = weights.length
+
+    const res = -Infinity
+
+    const dp = Array(capacity+1).fill(0)
+
+    for(i = 1; i <= n; i++) {
+        for(j = capacity; j >= weights[i -1]; j--) {
+            dp[j] = Math.max(dp[j], dp[j - weights[i-1] + values[i-1]])
+        }
+
+        if(dp[j] > res) {
+            res = dp[j]
+        }
+    }
+
+    return res
+}
